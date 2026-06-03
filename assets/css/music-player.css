@@ -1,0 +1,464 @@
+@import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap');
+
+#custom-music-player {
+  position: fixed;
+  bottom: 30px;
+  left: 30px;
+  z-index: 10000;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  transition: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
+}
+
+/* Override HTML5 UP button styles */
+#custom-music-player button {
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+  color: #00d2ff !important; /* 淺藍色 */
+  cursor: pointer;
+  outline: none !important;
+  padding: 0 !important;
+  margin: 0 !important;
+  height: auto !important;
+  width: auto !important;
+  min-width: 0 !important;
+  min-height: 0 !important;
+  border-radius: 0 !important;
+  line-height: 1 !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  transition: color 0.2s ease;
+}
+
+#custom-music-player button:hover {
+  color: #ffffff !important; /* 白色 */
+  background: transparent !important;
+}
+
+/* ==========================================================================
+   MINIMIZED VIEW
+   ========================================================================== */
+.mp-minimized-view {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  opacity: 1;
+  transition: opacity 0.3s;
+  cursor: pointer;
+}
+
+.mp-disc {
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  background: radial-gradient(circle at center, #1a1e29 0%, #0d1117 100%);
+  border: 4px solid #1f1d24;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  animation: mp-spin 10s linear infinite;
+  animation-play-state: paused;
+  flex-shrink: 0;
+}
+
+.mp-disc.playing {
+  animation-play-state: running;
+}
+
+.mp-disc-center {
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: radial-gradient(circle at center, #00d2ff 0%, #0077ff 100%);
+  box-shadow: 0 0 10px #00d2ff;
+}
+
+.mp-disc.large {
+  width: 100px;
+  height: 100px;
+  border: 5px solid #1f1d24;
+}
+
+.mp-disc.large .mp-disc-center {
+  width: 24px;
+  height: 24px;
+  background: radial-gradient(circle at center, #ff4b4b 0%, #a61a1a 100%);
+  box-shadow: 0 0 10px #ff4b4b;
+}
+
+@keyframes mp-spin {
+  100% { transform: rotate(360deg); }
+}
+
+.mp-track-info-pill {
+  background: #231f20;
+  border-radius: 8px; /* 整體應該是長方形的 */
+  padding: 10px 20px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: #00d2ff; /* 淺藍色 */
+  font-size: 0.9rem;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.5);
+}
+
+.mp-icon-play {
+  font-size: 0.8rem;
+  color: #00d2ff;
+}
+
+.mp-pill-title {
+  color: #fff;
+  font-weight: 500;
+}
+
+/* ==========================================================================
+   EXPANDED VIEW & PLAYLIST VIEW
+   ========================================================================== */
+.mp-expanded-view, .mp-playlist-view {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 420px;
+  max-width: 90vw;
+  background: linear-gradient(135deg, #131417 0%, #1a161f 100%);
+  border-radius: 8px; /* 整體應該是長方形的 */
+  padding: 15px 20px;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.8);
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(20px) scale(0.95);
+  transform-origin: bottom left;
+  transition: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
+  box-sizing: border-box;
+}
+
+/* Show expanded view on hover, unless playlist is active */
+#custom-music-player:hover .mp-minimized-view {
+  opacity: 0;
+  visibility: hidden;
+}
+
+#custom-music-player:hover:not(.show-playlist) .mp-expanded-view {
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(0) scale(1);
+}
+
+/* Show playlist when class is applied */
+#custom-music-player.show-playlist .mp-playlist-view {
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(0) scale(1);
+}
+
+#custom-music-player.show-playlist .mp-expanded-view,
+#custom-music-player.show-playlist .mp-minimized-view {
+  opacity: 0;
+  visibility: hidden;
+}
+
+/* Header */
+.mp-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 15px;
+}
+
+.mp-header-title {
+  color: #00d2ff;
+  font-size: 0.75rem;
+  letter-spacing: 2px;
+  font-weight: 600;
+}
+
+.mp-header-actions {
+  display: flex;
+  gap: 15px;
+}
+
+.mp-header-actions button {
+  font-size: 1.1rem;
+  width: 30px !important;
+  height: 30px !important;
+  border-radius: 4px !important; /* 長方形圓角 */
+  background: rgba(255,255,255,0.05) !important;
+}
+
+.mp-header-actions button:hover {
+  background: rgba(255,255,255,0.1) !important;
+}
+
+/* Body (Now Playing) */
+.mp-body {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  margin-bottom: 15px;
+}
+
+.mp-track-details {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+}
+
+.mp-track-details h3 {
+  color: #fff;
+  margin: 0 0 5px 0;
+  font-size: 1.2rem;
+  font-weight: 600;
+  border-bottom: none;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.mp-track-details p {
+  color: #00d2ff;
+  margin: 0;
+  font-size: 0.85rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Progress Bar */
+.mp-progress-container {
+  margin-bottom: 20px;
+}
+
+.mp-progress-bar {
+  height: 6px;
+  background: #333;
+  border-radius: 3px;
+  position: relative;
+  cursor: pointer;
+  margin-bottom: 8px;
+}
+
+.mp-progress {
+  height: 100%;
+  background: #00d2ff;
+  border-radius: 3px;
+  width: 0%;
+  position: absolute;
+  top: 0;
+  left: 0;
+}
+
+.mp-progress-thumb {
+  width: 12px;
+  height: 12px;
+  background: #fff;
+  border-radius: 50%;
+  position: absolute;
+  top: 50%;
+  left: 0%;
+  transform: translate(-50%, -50%);
+  box-shadow: 0 0 5px rgba(0,210,255,0.8);
+  opacity: 0;
+  transition: opacity 0.2s;
+}
+
+.mp-progress-bar:hover .mp-progress-thumb {
+  opacity: 1;
+}
+
+.mp-time {
+  display: flex;
+  justify-content: space-between;
+  color: #7a7a7a;
+  font-size: 0.75rem;
+  font-family: 'Share Tech Mono', monospace;
+}
+
+/* Controls */
+.mp-controls {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.mp-volume-container {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  position: relative;
+}
+
+.mp-vol-dot {
+  display: inline-block;
+  width: 4px;
+  height: 4px;
+  background: #00d2ff;
+  border-radius: 50%;
+  margin-left: 6px;
+}
+
+.mp-volume-slider-wrapper {
+  width: 0;
+  overflow: hidden;
+  transition: width 0.3s ease;
+  display: flex;
+  align-items: center;
+}
+
+.mp-volume-container:hover .mp-volume-slider-wrapper,
+.mp-volume-slider-wrapper.active {
+  width: 60px;
+}
+
+.mp-volume-slider {
+  -webkit-appearance: none;
+  width: 100%;
+  height: 4px;
+  background: #333;
+  border-radius: 2px;
+  outline: none;
+  margin: 0;
+}
+
+.mp-volume-slider::-webkit-slider-thumb {
+  -webkit-appearance: none !important;
+  appearance: none !important;
+  width: 14px !important;
+  height: 14px !important;
+  border-radius: 50% !important;
+  background: #00d2ff !important;
+  cursor: pointer !important;
+  box-shadow: 0 0 5px rgba(0,210,255,0.8) !important;
+  margin-top: -5px !important;
+  border: none !important;
+}
+
+.mp-volume-slider::-moz-range-thumb {
+  width: 14px !important;
+  height: 14px !important;
+  border: none !important;
+  border-radius: 50% !important;
+  background: #00d2ff !important;
+  cursor: pointer !important;
+  box-shadow: 0 0 5px rgba(0,210,255,0.8) !important;
+}
+
+.mp-volume-slider::-webkit-slider-runnable-track {
+  width: 100%;
+  height: 4px;
+  cursor: pointer;
+  background: #333;
+  border-radius: 2px;
+}
+
+.mp-playback-controls {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+.mp-playback-controls button {
+  font-size: 1.2rem;
+}
+
+.mp-play-btn {
+  width: 50px !important;
+  height: 50px !important;
+  border-radius: 50% !important; /* 保留圓形大按鈕的設計 */
+  background: linear-gradient(135deg, #00d2ff 0%, #0056ff 100%) !important;
+  color: #fff !important;
+  font-size: 1.3rem !important;
+  box-shadow: 0 0 15px rgba(0, 210, 255, 0.5) !important;
+  transition: transform 0.2s;
+}
+
+.mp-play-btn:hover {
+  transform: scale(1.05);
+  color: #fff !important;
+}
+
+/* ==========================================================================
+   PLAYLIST ITEMS
+   ========================================================================== */
+.mp-playlist-items {
+  max-height: 250px;
+  overflow-y: auto;
+  padding-right: 5px;
+}
+
+.mp-playlist-items::-webkit-scrollbar {
+  width: 4px;
+}
+
+.mp-playlist-items::-webkit-scrollbar-thumb {
+  background: #333;
+  border-radius: 2px;
+}
+
+.mp-playlist-item {
+  display: flex;
+  align-items: center;
+  padding: 12px 15px;
+  border-radius: 6px; /* 長方形 */
+  cursor: pointer;
+  transition: background 0.2s;
+  margin-bottom: 5px;
+}
+
+.mp-playlist-item:hover {
+  background: rgba(255,255,255,0.05);
+}
+
+.mp-playlist-item.active {
+  background: rgba(0, 210, 255, 0.1);
+  border: 1px solid rgba(0, 210, 255, 0.2);
+}
+
+.mp-playlist-item-num {
+  width: 30px;
+  color: #00d2ff;
+  font-size: 0.8rem;
+  font-family: 'Share Tech Mono', monospace;
+}
+
+.mp-playlist-item-info {
+  flex-grow: 1;
+}
+
+.mp-playlist-item-title {
+  color: #fff;
+  font-weight: 500;
+  margin-bottom: 3px;
+  font-size: 0.95rem;
+}
+
+.mp-playlist-item.active .mp-playlist-item-title {
+  color: #00d2ff;
+}
+
+.mp-playlist-item-desc {
+  color: #00d2ff;
+  font-size: 0.8rem;
+}
+
+.mp-playlist-item-icon {
+  color: #00d2ff;
+  opacity: 0;
+}
+
+.mp-playlist-item.active .mp-playlist-item-icon {
+  opacity: 1;
+}
+
+/* Animated Equalizer */
+.mp-equalizer { display: flex; align-items: flex-end; justify-content: center; height: 14px; gap: 2px; }
+.mp-equalizer span { width: 3px; background-color: #00d2ff; border-radius: 1px; }
+.mp-equalizer.playing span { animation: eq-bounce 0.5s ease infinite alternate; }
+.mp-equalizer.playing span:nth-child(1) { animation-delay: 0.1s; height: 100%; }
+.mp-equalizer.playing span:nth-child(2) { animation-delay: 0.3s; height: 60%; }
+.mp-equalizer.playing span:nth-child(3) { animation-delay: 0s; height: 80%; }
+.mp-equalizer:not(.playing) span { height: 3px; }
+@keyframes eq-bounce { 0% { height: 3px; } 100% { height: 14px; } }
